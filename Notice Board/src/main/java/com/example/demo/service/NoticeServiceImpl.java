@@ -6,8 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
-@RequiredargsConstructor
-
+@RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository repository;
 
@@ -21,11 +20,11 @@ public List<Notice> getAllNotices(){
 
 }
 @Override
-public Notice getNoticeById(Long Id){
-    return repository.findBy(Id).orElse(Null);
+public Notice getNoticeById(Long id){
+    return repository.findBy(id).orElse(null);
 }
 @Override 
-public void deleteNotice(Long Id){
-    repository.deleteById(Id);
+public void deleteNotice(Long id){
+    repository.deleteById(id);
 }
 }
