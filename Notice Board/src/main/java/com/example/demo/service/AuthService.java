@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
@@ -24,23 +25,20 @@ public class AuthService {
         User u = repo.findByUsername(username).orElse(null);
         if (u == null) return null;
 
-        if (!passwordEncoder.matches(password, u.getPassword())) return null;
+        if (!passwordEncoder.matches(password, u.getPassword()))
+            return null;
 
-        String token = jwtUtil.generateToken(u.getUsername(), u.getRole());
-
-        return new AuthResponse(
-                token,
+        String token = jwtUtil.generateToken(
                 u.getUsername(),
-                u.getRole()
+                u.getRole().name()
         );
+
+        return new AuthResponse(token, u.getRole().name());
     }
 
-    // Admin creates users
-    public User createUser(String username, String rawPassword, String fullName, String email, String role) {
+    public User createUser(String username, String rawPassword, String fullName, String email, Role role) {
 
-        if (repo.findByUsername(username).isPresent()) {
-            return null; // username already exists
-        }
+        if (repo.findByUsername(username).isPresent()) return null;
 
         User u = User.builder()
                 .username(username)

@@ -22,6 +22,16 @@ public class User {
     private String fullName;
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;   // ADMIN / MODERATOR / USER
+    private Role role;
+
+    // Custom constructor (does not include ID)
+    public User(String username, String password, String fullName, String email, Role role) {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
+    }
 }
