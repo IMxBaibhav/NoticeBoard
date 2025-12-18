@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QueryService {
@@ -18,30 +17,51 @@ public class QueryService {
         this.queryRepository = queryRepository;
     }
 
-    public Query createQuery(Query q) {
-        q.setCreatedAt(LocalDateTime.now());
-        q.setStatus(QueryStatus.OPEN);
-        return queryRepository.save(q);
+    /* =========================
+       STUDENT ACTIONS
+       ========================= */
+
+    // Student creates a query
+    public Query createQuery(Query query) {
+        query.setCreatedAt(LocalDateTime.now());
+        query.setStatus(QueryStatus.OPEN);
+        return queryRepository.save(query);
     }
 
+    // Student views own queries
     public List<Query> getQueriesForStudent(String username) {
         return queryRepository.findByStudentUsername(username);
     }
 
+    /* =========================
+       ADMIN / TEACHER ACTIONS
+       ========================= */
+
+    // Admin / Teacher: view all queries
     public List<Query> getAllQueries() {
         return queryRepository.findAll();
     }
 
-    public Optional<Query> getById(Long id) { return queryRepository.findById(id); }
+    // Admin / Teacher: view by status
+    public List<Query> getQueriesByStatus(QueryStatus status) {
+        return queryRepository.findByStatus(status);
+    }
 
+    // Get query by ID
+    public Query getQueryById(Long id) {
+        return queryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Query not found"));
+    }
+
+    // Admin / Teacher reply to query
     public Query replyToQuery(Long id, String replyMessage, String repliedBy) {
-        Optional<Query> opt = queryRepository.findById(id);
-        if (opt.isEmpty()) throw new IllegalArgumentException("Query not found");
-        Query q = opt.get();
-        q.setReplyMessage(replyMessage);
-        q.setRepliedBy(repliedBy);
-        q.setReplyDate(LocalDateTime.now());
-        q.setStatus(QueryStatus.REPLIED);
-        return queryRepository.save(q);
+        Query query = getQueryById(id);
+
+        query.setReplyMessage(replyMessage);
+        query.setRepliedBy(repliedBy);
+        query.setReplyDate(LocalDateTime.now());
+        query.setStatus(QueryStatus.REPLIED);
+
+        return queryRepository.save(query);
     }
 }
